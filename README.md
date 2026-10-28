@@ -1,5 +1,9 @@
 # SubSource Telegram Bot — Cloudflare Workers
 
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?logo=cloudflare)](https://workers.cloudflare.com/)
+[![Tests](https://img.shields.io/badge/tests-vitest-green?logo=vitest)](https://vitest.dev/)
+
 A Telegram bot that searches and downloads subtitles from
 [SubSource.net](https://subsource.net) using their public API, running entirely
 on **Cloudflare Workers** with **D1** for storage. No servers, no polling loop,
@@ -8,6 +12,10 @@ no runtime npm dependencies.
 The bot is feature-complete for day-to-day use: user search/download flows,
 filters, download history, subtitle previews, per-user limits, and a full
 Telegram admin panel with broadcasts, user blocking and admin management.
+
+> **What you need before deploying:** a bot token from
+> [@BotFather](https://t.me/BotFather), a SubSource API key from
+> [subsource.net](https://subsource.net), and a Cloudflare account.
 
 ---
 
