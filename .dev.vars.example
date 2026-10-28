@@ -1,0 +1,23 @@
+# Copy this file to .dev.vars for local development.
+# Never commit .dev.vars. `./deploy.sh` fills this file for you.
+
+BOT_TOKEN=123456789:replace-with-your-telegram-bot-token
+SUBSOURCE_API_KEY=replace-with-your-subsource-api-key
+TELEGRAM_WEBHOOK_SECRET=replace-with-a-long-random-string
+
+# Comma-separated Telegram user IDs. Use /id in the bot to find yours.
+ADMIN_TELEGRAM_IDS=123456789
+
+# Optional tuning (defaults shown). These can also be changed at runtime from
+# the admin panel's Settings screen.
+APP_ENV=development
+LOG_LEVEL=debug
+RATE_LIMIT_PER_MINUTE=20
+DOWNLOAD_LIMIT_PER_HOUR=30
+SUBTITLES_PER_PAGE=6
+RECENT_PER_PAGE=8
+SEARCH_RESULTS=8
+BOT_USERNAME=YourBot
+
+# Optional: used by `npm run webhook:set`, set automatically by deploy.sh.
+WORKER_URL=https://subsource-bot.your-subdomain.workers.dev

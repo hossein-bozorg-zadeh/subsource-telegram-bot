@@ -1,0 +1,34 @@
+{
+  "name": "subsource-telegram-bot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Telegram bot for SubSource.net running on Cloudflare Workers",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:check": "wrangler deploy --dry-run --outdir dist",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm run test",
+    "db:create": "wrangler d1 create subsource-bot",
+    "db:migrate:local": "wrangler d1 migrations apply subsource-bot --local",
+    "db:migrate": "wrangler d1 migrations apply subsource-bot --remote",
+    "deploy:all": "bash deploy.sh",
+    "setup": "bash deploy.sh",
+    "webhook:set": "node scripts/set-webhook.mjs",
+    "webhook:info": "node scripts/set-webhook.mjs --info",
+    "webhook:delete": "node scripts/set-webhook.mjs --delete",
+    "commands:set": "node scripts/set-commands.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261027.1",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.5",
+    "wrangler": "^4.153.0"
+  }
+}
