@@ -29,6 +29,9 @@ Telegram admin panel with broadcasts, user blocking and admin management.
 - Movie / TV detail page with subtitle pagination
 - One-tap subtitle download (ZIP) with a caption describing language, release,
   framerate, HI/foreign-parts flags and download count
+- **Subtitle cache** — with `CACHE_CHANNEL_ID` set, every downloaded subtitle is
+  stored in a private Telegram channel and repeat requests are re-served from
+  that channel without touching the SubSource API
 - 👁 **Preview** — read subtitle text before downloading
 - `/downloads` — personal download history with re-download and preview buttons
 - `/filters` — language, release year and movie/TV filters applied everywhere
@@ -212,10 +215,37 @@ There is no public admin web UI. The admin panel is inside Telegram.
 | `SUBTITLES_PER_PAGE` | no | `6` | Subtitle rows per title page |
 | `RECENT_PER_PAGE` | no | `8` | Recent rows per page |
 | `SEARCH_RESULTS` | no | `8` | Search results per query |
+| `CACHE_CHANNEL_ID` | no | empty | Private channel id used as the subtitle cache (see below) |
 
 The four numeric limits/pages can also be changed at runtime from
 **Admin panel → Settings**; values stored in D1 override the deployment
 defaults. Admins are exempt from rate limits and maintenance mode.
+
+### Subtitle cache (optional)
+
+Set `CACHE_CHANNEL_ID` to a private Telegram channel where the bot is an
+administrator, and the bot stops re-downloading what it has already sent:
+
+1. The first time any user downloads a subtitle, a copy is posted to the
+   channel and the message is indexed in D1 (`sub_cache` table,
+   migration `0003_subtitle_cache.sql` — applied by `deploy.sh` /
+   `npm run db:migrate`).
+2. Any later request for the same subtitle is answered with Telegram's
+   `copyMessage` from the channel — no SubSource API call, no download,
+   instant delivery. Cached replies are tagged "from cache ⚡" in the
+   callback toast.
+3. If a cached message disappears or the copy fails, the bot silently falls
+   back to a normal download and refreshes the cache entry.
+
+To enable: create a private channel, add the bot as an admin (post-message
+permission), then set the variable and redeploy:
+
+```bash
+printf '%s' '-1001234567890' | npx wrangler secret put CACHE_CHANNEL_ID
+# or add it to "vars" in wrangler.jsonc — it is not a secret
+```
+
+Leave it unset and the bot behaves exactly as before.
 
 ---
 

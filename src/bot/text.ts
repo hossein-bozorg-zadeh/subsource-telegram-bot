@@ -85,6 +85,8 @@ export const text = {
 
   downloadSent: "Subtitle sent ✅",
 
+  downloadSentCached: "Subtitle sent from cache ⚡",
+
   previewUsage: "Usage: /preview <subtitle id>. You can find IDs on any title page.",
 
   yearPrompt: [

@@ -244,6 +244,23 @@ export class TelegramApi {
     return this.call<boolean>("setMyCommands", { commands });
   }
 
+  /**
+   * Copy an existing message (e.g. a cached subtitle document in the storage
+   * channel) into a chat without re-uploading the file or showing a
+   * "Forwarded from" header.
+   */
+  async copyMessage(
+    chatId: number,
+    fromChatId: number,
+    messageId: number,
+  ): Promise<{ message_id: number }> {
+    return this.call<{ message_id: number }>("copyMessage", {
+      chat_id: chatId,
+      from_chat_id: fromChatId,
+      message_id: messageId,
+    });
+  }
+
   async setWebhook(url: string, secretToken: string): Promise<boolean> {
     return this.call<boolean>("setWebhook", {
       url,

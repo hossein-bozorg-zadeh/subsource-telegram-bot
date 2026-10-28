@@ -7,6 +7,7 @@ export * from "./rate-limits";
 export * from "./sessions";
 export * from "./settings";
 export * from "./stats";
+export * from "./sub-cache";
 export * from "./updates";
 export * from "./user-settings";
 export * from "./users";

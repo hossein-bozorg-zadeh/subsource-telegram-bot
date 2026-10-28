@@ -25,4 +25,11 @@ export interface Env {
   SUBTITLES_PER_PAGE?: string;
   RECENT_PER_PAGE?: string;
   SEARCH_RESULTS?: string;
+
+  /**
+   * Optional private channel used as a subtitle cache. The bot must be an
+   * admin there. When set, downloaded subtitles are stored in the channel and
+   * repeat requests are served with copyMessage instead of a SubSource call.
+   */
+  CACHE_CHANNEL_ID?: string;
 }

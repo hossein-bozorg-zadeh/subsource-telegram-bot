@@ -21,3 +21,8 @@ BOT_USERNAME=YourBot
 
 # Optional: used by `npm run webhook:set`, set automatically by deploy.sh.
 WORKER_URL=https://subsource-bot.your-subdomain.workers.dev
+
+# Optional: private channel used as the subtitle cache (bot must be admin).
+# First download is stored here; repeat requests are served without the API.
+# Empty = cache disabled.
+CACHE_CHANNEL_ID=

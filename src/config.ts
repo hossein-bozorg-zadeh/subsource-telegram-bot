@@ -14,6 +14,8 @@ export interface Config {
   subtitlesPerPage: number;
   recentPerPage: number;
   searchResults: number;
+  /** Storage channel for the subtitle cache; null disables caching. */
+  cacheChannelId: number | null;
 }
 
 export class ConfigurationError extends Error {
@@ -81,6 +83,21 @@ function parseLogLevel(value: string | undefined): LogLevel {
   return level as LogLevel;
 }
 
+function parseChannelId(value: string | undefined): number | null {
+  const raw = value?.trim();
+  if (!raw) return null;
+  if (!/^-?\d+$/.test(raw)) {
+    throw new ConfigurationError(
+      `CACHE_CHANNEL_ID must be a numeric Telegram chat id (e.g. -1001234567890), got: ${raw}`,
+    );
+  }
+  const parsed = Number(raw);
+  if (!Number.isSafeInteger(parsed)) {
+    throw new ConfigurationError("CACHE_CHANNEL_ID is out of range");
+  }
+  return parsed;
+}
+
 /**
  * Validate configuration once per request. Failing fast here produces a clear
  * 500 instead of a confusing Telegram API error later.
@@ -140,5 +157,6 @@ export function loadConfig(env: Env): Config {
     ),
     recentPerPage: boundedInt(env.RECENT_PER_PAGE, 8, 1, 20, "RECENT_PER_PAGE"),
     searchResults: boundedInt(env.SEARCH_RESULTS, 8, 1, 20, "SEARCH_RESULTS"),
+    cacheChannelId: parseChannelId(env.CACHE_CHANNEL_ID),
   };
 }

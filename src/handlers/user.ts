@@ -21,11 +21,13 @@ import {
 import { text } from "../bot/text";
 import {
   getLimits,
+  getCachedSubtitle,
   getUserFilters,
   getUserUsage,
   listUserDownloads,
   logDownload,
   logSearch,
+  saveCachedSubtitle,
   updateUserFilters,
 } from "../db";
 import {
@@ -435,6 +437,37 @@ export async function downloadSubtitle(
 
   await ctx.api.sendChatAction(ctx.chatId, "upload_document").catch(() => undefined);
 
+  // Serve a repeat download from the storage channel when possible so the
+  // SubSource API is not called at all. A stale or missing cached message
+  // falls through to a fresh download.
+  if (ctx.config.cacheChannelId !== null) {
+    const cached = await getCachedSubtitle(ctx.db, subtitleId).catch(() => null);
+    if (cached) {
+      try {
+        await ctx.api.copyMessage(
+          ctx.chatId,
+          cached.chat_id,
+          cached.message_id,
+        );
+        await logDownload(
+          ctx.db,
+          ctx.userId,
+          subtitleId,
+          null,
+          null,
+          null,
+        ).catch(logFailure(ctx, "download_log_failed"));
+        await ctx.answer(text.downloadSentCached);
+        return;
+      } catch (error) {
+        ctx.logger.warn("subtitle_cache_copy_failed", {
+          subtitleId,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+  }
+
   let metadata: Subtitle | null = null;
   try {
     const response = await ctx.subsource.getSubtitle(subtitleId);
@@ -459,6 +492,31 @@ export async function downloadSubtitle(
     : `SubSource subtitle <code>${subtitleId}</code>`;
 
   await ctx.api.sendDocument(ctx.chatId, blob, filename, caption);
+
+  // Store a copy in the cache channel for future requests. Cache failures
+  // must never turn a successful download into an error for the user.
+  if (ctx.config.cacheChannelId !== null) {
+    try {
+      const stored = await ctx.api.sendDocument(
+        ctx.config.cacheChannelId,
+        blob,
+        filename,
+        caption,
+      );
+      await saveCachedSubtitle(
+        ctx.db,
+        subtitleId,
+        stored.chat.id,
+        stored.message_id,
+        filename,
+      );
+    } catch (error) {
+      ctx.logger.warn("subtitle_cache_store_failed", {
+        subtitleId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
 
   await logDownload(
     ctx.db,

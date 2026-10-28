@@ -131,6 +131,7 @@ describe("admin feature presenters", () => {
     subtitlesPerPage: 6,
     recentPerPage: 8,
     searchResults: 8,
+    cacheChannelId: null,
   };
 
   it("renders recent downloads with the user", () => {
